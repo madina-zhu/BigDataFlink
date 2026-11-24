@@ -1,0 +1,5 @@
+pgdata/
+jars/*.jar
+__pycache__/
+*.log
+.venv/

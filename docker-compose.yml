@@ -59,27 +59,29 @@ services:
     image: flink-pyflink:1.18
     container_name: lab3-jobmanager
     mem_limit: 1g
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
     ports:
       - "8081:8081"
     command: jobmanager
     environment:
-      - |
-        FLINK_PROPERTIES=
+      FLINK_PROPERTIES: |
         jobmanager.rpc.address: jobmanager
         jobmanager.memory.process.size: 768m
     volumes:
       - ./flink_job:/opt/flink/usrlib
 
   taskmanager:
-    build: .
     image: flink-pyflink:1.18
     container_name: lab3-taskmanager
     mem_limit: 1536m
     depends_on: [jobmanager]
     command: taskmanager
     environment:
-      - |
-        FLINK_PROPERTIES=
+      FLINK_PROPERTIES: |
         jobmanager.rpc.address: jobmanager
         taskmanager.numberOfTaskSlots: 4
         taskmanager.memory.process.size: 1280m
@@ -97,6 +99,7 @@ services:
     environment:
       KAFKA_BOOTSTRAP: kafka:29092
       KAFKA_TOPIC: sales_topic
+      DATA_DIR: mock_data
 
 volumes:
   pgdata:
